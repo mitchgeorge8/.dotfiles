@@ -4,5 +4,5 @@ dark = "kanagawa"
 [icon]
 prepend_dirs = [
   { name = "Documents", text = "󰈙" },
-  { name = "Downloads", text = "󰉍" },
+  # { name = "Downloads", text = "󰉍" },
 ]
