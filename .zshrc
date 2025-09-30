@@ -33,6 +33,11 @@ fpath=($ZSH/plugins/zsh-completions/src $fpath)
 # Aliases
 alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 
+# Keybinds
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "^[[3~" delete-char
+
 # Powerlevel10k
 source $ZSH/powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
