@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+handle() {
+	case $1 in
+		fullscreen*)
+			state=${1: -1}
+			previous_temp=$(hyprctl hyprsunset temperature)
+			if [ $state == 1 ]; then
+				hyprctl hyprsunset identity
+			else
+				hyprctl hyprsunset temperature $previous_temp
+				~/.config/hypr/night-light
+			fi
+	esac
+}
+
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done

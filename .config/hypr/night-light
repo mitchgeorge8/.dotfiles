@@ -1,20 +1,62 @@
 #!/usr/bin/bash
 
-location="USOH0212"
-tmp_file=/tmp/$location.out
+# Don't pull sunrise/sunset data or recreate cronjobs if it's already been done once this session
+if [ ! -f "/tmp/sunrise" ]; then
+	location="USOH0212"
+	tmp_file=/tmp/$location.out
 
-until [ -s $tmp_file ]
-do
-	wget -q "https://weather.com/weather/today/l/$location" -O "$tmp_file"
-done
+	# Loop until this file has content
+	# Useful when running on startup because it takes a few seconds to connect to the internet
+	# Also useful because it will only create this file once per session
+	until [ -s $tmp_file ]
+	do
+		wget -q "https://weather.com/weather/today/l/$location" -O "$tmp_file"
+	done
+	
+	SUNR=$(grep SunriseTime "$tmp_file" | grep -oE '((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))' | head -1)
+	SUNS=$(grep SunsetTime "$tmp_file" | grep -oE '((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))' | tail -1)
+	
+	sunrise=$(date --date="$SUNR" +%k%M)
+	sunset=$(date --date="$SUNS" +%k%M)
+	echo $sunset > "/tmp/sunset"
+	echo $sunrise > "/tmp/sunrise"
+	
+	# Clear all current cronjobs
+	crontab -r
+	
+	# Starting brightness and temperature
+	brightness=50
+	temperature=4000
+	
+	# Create cronjobs based on sunrise
+	for i in -60 -30 0 30 60
+	do
+		brightness=$(($brightness + 10))
+		temperature=$(($temperature + 400))
+	
+		calc_sunrise=$(date --date="$sunrise + $i minutes" +%k%M)
+	
+		(crontab -l 2>/dev/null; echo "${calc_sunrise: -2} ${calc_sunrise::-2} * * * ddcutil setvcp 10 $brightness; hyprctl -i 0 hyprsunset temperature $temperature") | crontab -
+	done
+	
+	# Create cronjobs based on sunset
+	for i in -60 -30 0 30 60
+	do
+		brightness=$(($brightness - 10))
+		temperature=$(($temperature - 400))
+	
+		calc_sunset=$(date --date="$sunset + $i minutes" +%k%M)
+	
+		(crontab -l 2>/dev/null; echo "${calc_sunset: -2} ${calc_sunset::-2} * * * ddcutil setvcp 10 $brightness; hyprctl -i 0 hyprsunset temperature $temperature") | crontab -
+	done
+fi
 
-SUNR=$(grep SunriseTime "$tmp_file" | grep -oE '((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))' | head -1)
-SUNS=$(grep SunsetTime "$tmp_file" | grep -oE '((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))' | tail -1)
-
-sunrise=$(date --date="$SUNR" +%k%M)
-sunset=$(date --date="$SUNS" +%k%M)
+# Get sunrise/sunset from temp files
+sunrise=$(cat "/tmp/sunrise")
+sunset=$(cat "/tmp/sunset")
 current_time=$(date +%k%M)
 
+# Change the brightness and temperature based on current time every time this script runs
 if [ $current_time -le $(($sunrise - 100)) ]; then
 	ddcutil setvcp 10 50
 	hyprctl hyprsunset temperature 4000 -q
@@ -49,30 +91,3 @@ else
 	ddcutil setvcp 10 100
 	hyprctl hyprsunset identity -q
 fi
-
-crontab -r
-# (crontab -l 2>/dev/null; echo "@reboot until printenv HYPRLAND_INSTANCE_SIGNATURE; do; done; $HOME/.local/bin/night_light.sh") | crontab -
-# (crontab -l 2>/dev/null; echo "0 3 * * * $HOME/.local/bin/night_light.sh") | crontab -
-
-brightness=50
-temperature=4000
-
-for i in -60 -30 0 30 60
-do
-	brightness=$(($brightness + 10))
-	temperature=$(($temperature + 400))
-
-	calc_sunrise=$(date --date="$sunrise + $i minutes" +%k%M)
-
-	(crontab -l 2>/dev/null; echo "${calc_sunrise: -2} ${calc_sunrise::-2} * * * ddcutil setvcp 10 $brightness; hyprctl -i 0 hyprsunset temperature $temperature") | crontab -
-done
-
-for i in -60 -30 0 30 60
-do
-	brightness=$(($brightness - 10))
-	temperature=$(($temperature - 400))
-
-	calc_sunset=$(date --date="$sunset + $i minutes" +%k%M)
-
-	(crontab -l 2>/dev/null; echo "${calc_sunset: -2} ${calc_sunset::-2} * * * ddcutil setvcp 10 $brightness; hyprctl -i 0 hyprsunset temperature $temperature") | crontab -
-done
