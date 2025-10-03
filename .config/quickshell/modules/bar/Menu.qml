@@ -6,7 +6,7 @@ CustomButton {
   id: menu
   buttonText.text: ""
   buttonText.font.pointSize: Appearance.font.size + 2
-  buttonText.bottomPadding: 3
+  buttonText.bottomPadding: 2.5
   buttonText.color: "#51A2DA"
   mouseArea.onClicked: {
     openMenu.running = true;

@@ -18,60 +18,40 @@ Variants {
         right: true
       }
       exclusionMode: ExclusionMode.Ignore
-      implicitWidth: drawer.width
+      implicitWidth: menu.width
       color: "transparent"
 
       Rectangle {
-        id: drawer
+        id: menu
         anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        anchors.right: rightMenu.left
         width: 100
         height: 100
         color: "white"
 
         MouseArea {
           id: mouseArea
-          anchors.fill: drawer
+          anchors.fill: menu
+          anchors.rightMargin: 5
           hoverEnabled: true
 
           states: State {
             name: "hover"
             when: mouseArea.containsMouse
             PropertyChanges {
-              drawer.width: 50
+              target: menu
+              anchors.left: rightMenu.left
             }
           }
 
           transitions: Transition {
             to: "hover"
             reversible: true
-            NumberAnimation {
-              properties: "width"
+            PropertyAnimation {
+              properties: "anchors"
               duration: 100
               easing.type: Easing.InOutQuad
             }
-          }
-        }
-      }
-      Shape {
-        id: corner
-        width: 10
-        height: 10
-        anchors.right: drawer.right
-        anchors.bottom: drawer.top
-
-        ShapePath {
-          strokeWidth: 2
-          strokeColor: "white"
-          fillColor: "transparent"
-
-          startX: corner.width
-          startY: 0
-          PathArc {
-            x: 0
-            y: corner.height
-            radiusX: 10
-            radiusY: 10
           }
         }
       }

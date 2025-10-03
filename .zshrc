@@ -28,15 +28,18 @@ bindkey -v
 # Plugins
 source $ZSH/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+source $ZSH/plugins/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh
 fpath=($ZSH/plugins/zsh-completions/src $fpath)
 
 # Aliases
 alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 
 # Keybinds
-bindkey "^[[H" beginning-of-line
-bindkey "^[[F" end-of-line
-bindkey "^[[3~" delete-char
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[3~' delete-char
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 # Powerlevel10k
 source $ZSH/powerlevel10k/powerlevel10k.zsh-theme

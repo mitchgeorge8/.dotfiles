@@ -5,12 +5,35 @@ handle() {
 		fullscreen*)
 			state=${1: -1}
 			previous_temp=$(hyprctl hyprsunset temperature)
+
 			if [ $state == 1 ]; then
-				hyprctl hyprsunset identity
+				hyprctl hyprsunset identity -q
 			else
-				hyprctl hyprsunset temperature $previous_temp
-				~/.config/hypr/night-light
+				if [ $previous_temp != 6000 ]; then
+					hyprctl hyprsunset temperature $previous_temp -q
+					~/.config/hypr/night-light
+				fi
+			fi ;;
+
+		activewindowv2*)
+			fullscreen=$(hyprctl activewindow | grep fullscreen:)
+			current_state=${fullscreen: -1}
+			if [ ! -f "/tmp/previous_state" ]; then
+				previous_state=$current_state
+			else
+				previous_state=$(cat "/tmp/previous_state")
 			fi
+			previous_temp=$(hyprctl hyprsunset temperature)
+			echo $current_state > "/tmp/previous_state" 
+
+			if [ $previous_state == 0 ] && [ $current_state -gt 0 ]; then
+				hyprctl hyprsunset identity -q
+			elif [ $previous_state -gt 0 ] && [ $current_state == 0 ]; then
+				if [ $previous_temp != 6000 ]; then
+					hyprctl hyprsunset temperature $previous_temp -q
+					~/.config/hypr/night-light
+				fi
+			fi ;;
 	esac
 }
 
