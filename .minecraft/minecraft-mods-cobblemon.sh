@@ -104,8 +104,25 @@ mods=(
 	"zoomify"
 	)
 
+resourcepacks=(
+	"cobblemon-classic-grass-pack"
+	"cobblemon-interface"
+	"cobblemon-interface-modded"
+	"cobblemon-text-fix"
+	"cobblemotion"
+	"cobblesounds"
+	"e19_cobblemon_minimap_icons"
+	"rct-trainer-textures-plus"
+	)
+
 for mod in "${mods[@]}"
 do
 	url=$(curl -s "$modrinth/$mod/version" | jq '[.[] | select(.game_versions[]=="'$version'" and .loaders[]=="fabric")][0] | .files[0].url')
 	wget -nc -P $HOME/.minecraft/mods ${url//\"/}
+done
+
+for resourcepack in "${resourcepacks[@]}"
+do
+	url=$(curl -s "$modrinth/$resourcepack/version" | jq '[.[] | select(.game_versions[]=="'$version'")][0] | .files[0].url')
+	wget -nc -P $HOME/.minecraft/resourcepacks ${url//\"/}
 done
