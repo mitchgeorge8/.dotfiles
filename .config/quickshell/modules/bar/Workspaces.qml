@@ -17,6 +17,7 @@ Row {
       required property HyprlandWorkspace modelData
       buttonText.text: wsIcons()
       buttonText.color: Appearance.color.base04
+
       mouseArea.onClicked: modelData.activate()
 
       states: [
@@ -24,7 +25,8 @@ Row {
           name: "active"
           when: modelData.active
           PropertyChanges {
-            workspace.buttonText.color: Appearance.color.base05
+            workspace.buttonText.color: Appearance.color.base00
+            workspace.color: Appearance.color.base05
           }
         }
       ]
