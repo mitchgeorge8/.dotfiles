@@ -5,11 +5,10 @@ My Linux configuration
 ## Foundation
 
 <a href="https://archlinux.org/">
-  <img src="https://w7.pngwing.com/pngs/809/243/png-transparent-arch-linux-tgz-linux-angle-triangle-logo-thumbnail.png" alt="Arch Linux logo" height="200px">
+  <img src="./assets/arch-linux-logo.png" alt="Arch Linux logo" height="200px">
 </a>
-
 <a href="https://hypr.land/">
-  <img src="https://logolist.net/wp-content/uploads/2024/04/favicon.svg" alt="Hyprland logo" height="200px">
+  <img src="./assets/hyprland-logo.png" alt="Hyprland logo" height="200px">
 </a>
 
 ## Desktop Environment
